@@ -1,0 +1,22 @@
+services:
+  ml-service:
+    build: ./ml-service
+    ports: ["8000:8000"]
+    volumes:
+      - ./ml-service/model:/app/model
+      - ./ml-service/results:/app/results
+    environment:
+      MODEL_PATH: /app/model/best_model.pth
+  backend:
+    build: ./backend
+    ports: ["4000:4000"]
+    environment:
+      ML_SERVICE_URL: http://ml-service:8000
+      PORT: 4000
+    depends_on: [ml-service]
+  frontend:
+    build: ./frontend
+    ports: ["5173:5173"]
+    environment:
+      VITE_API_URL: http://localhost:4000
+    depends_on: [backend]

@@ -1,0 +1,20 @@
+node_modules/
+.venv/
+__pycache__/
+*.py[cod]
+.env
+dist/
+ml-service/data/
+ml-service/model/*.pth
+ml-service/results/*
+!ml-service/results/.gitkeep
+
+
+# APTOS dataset
+train_images/
+train.csv
+datasets/
+
+# Model checkpoints
+*.pth
+*.pt
