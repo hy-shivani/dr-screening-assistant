@@ -1,8 +1,22 @@
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
+import Login from "./Login";
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
 export default function App() {
+  const [token, setToken] = useState(
+  () => sessionStorage.getItem("access_token") || ""
+);
+
+function handleLogin(accessToken) {
+  sessionStorage.setItem("access_token", accessToken);
+  setToken(accessToken);
+}
+
+function handleLogout() {
+  sessionStorage.removeItem("access_token");
+  setToken("");
+}
   const [file, setFile] = useState(null), [preview, setPreview] = useState("");
   const [result, setResult] = useState(null), [error, setError] = useState(""), [loading, setLoading] = useState(false);
   const inputRef = useRef(null);
@@ -26,10 +40,38 @@ export default function App() {
     catch (e) { setError(e.response?.data?.error || "Could not analyze image. Check that backend and ML service are running."); }
     finally { setLoading(false); }
   }
-  function reset() { setFile(null); setResult(null); setError(""); if(inputRef.current) inputRef.current.value=""; }
-  const demo = result?.mode !== "model";
+
+function reset() {
+  setFile(null);
+  setResult(null);
+  setError("");
+  if (inputRef.current) inputRef.current.value = "";
+}
+
+if (!token) {
+  return <Login onLogin={handleLogin} />;
+}
+
+const demo = result?.mode !== "model";
+
+
+ 
   return <div className="shell">
-    <header><a className="brand" href="#"><span className="logo">R</span> Retina<span className="mint">Lens</span></a><span className="top-tag">● RESEARCH PROTOTYPE</span></header>
+
+<header>
+  <a className="brand" href="#">
+    <span className="logo">R</span> Retina
+    <span className="mint">Lens</span>
+  </a>
+
+  <div className="header-right">
+    <span className="top-tag">● RESEARCH PROTOTYPE</span>
+    <button className="link" onClick={handleLogout}>
+      Sign out
+    </button>
+  </div>
+</header>
+
     <main>
       <section className="hero"><div className="eyebrow">EXPLAINABLE AI · RETINAL SCREENING</div>
         <h1>See beyond the <span>prediction.</span></h1>
